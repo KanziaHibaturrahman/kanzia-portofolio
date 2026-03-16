@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kanzia — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #fafaf8;
+      --red: #e63b2e;
+      --green: #2d8c4e;
+      --blue: #2563eb;
+      --gray: #888;
+      --light: #f0efe9;
+      --border: #e2e0d8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--black);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--black);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, width 0.3s, height 0.3s, opacity 0.3s;
+      opacity: 0.4;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      background: rgba(250,250,248,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav.scrolled { border-bottom-color: var(--border); }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      color: var(--black);
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--gray);
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--black);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--black); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* Sections */
+    section { min-height: 100vh; padding: 0; }
+
+    /* ——— HERO ——— */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+      padding-top: 0;
+    }
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 4rem 4rem 5rem;
+    }
+    .hero-greeting {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.2s forwards;
+    }
+    .hero-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 5vw, 5rem);
+      line-height: 1.05;
+      font-weight: 700;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.4s forwards;
+    }
+    .hero-headline em {
+      font-style: italic;
+      color: var(--red);
+    }
+    .hero-headline .green { color: var(--green); }
+    .hero-headline .blue { color: var(--blue); }
+
+    .hero-exp {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.6s forwards;
+    }
+    .hero-exp-item {
+      font-size: 0.85rem;
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .hero-exp-item strong { color: var(--black); font-weight: 500; }
+    .hero-exp-item .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+      background: var(--light);
+    }
+    .hero-collage {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 3px;
+      opacity: 0;
+      animation: fadeIn 1.2s 0.8s forwards;
+    }
+    .collage-item {
+      background: var(--border);
+      overflow: hidden;
+    }
+    .collage-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: grayscale(10%);
+      transition: filter 0.4s, transform 0.6s;
+    }
+    .collage-item:hover img {
+      filter: grayscale(0%);
+      transform: scale(1.05);
+    }
+    .hero-overlay-text {
+      position: absolute;
+      bottom: 2rem; right: 2rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.75rem;
+      font-style: italic;
+      color: rgba(10,10,10,0.4);
+      writing-mode: vertical-rl;
+      letter-spacing: 0.1em;
+    }
+
+    /* ——— WORKS ——— */
+    #works {
+      padding: 8rem 5rem;
+      min-height: auto;
+    }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 2rem;
+      margin-bottom: 5rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      font-weight: 700;
+    }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 6px;
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 38%;
+      left: 0; right: 0;
+      height: 1px;
+      background: var(--black);
+      z-index: 0;
+    }
+    .timeline-item {
+      position: relative;
+      z-index: 1;
+      background: var(--white);
+    }
+    .timeline-year {
+      font-size: 0.75rem;
+      color: var(--gray);
+      letter-spacing: 0.12em;
+      text-align: right;
+      padding: 0 1rem 1rem 0;
+    }
+    .timeline-img {
+      width: 100%;
+      aspect-ratio: 3/2;
+      overflow: hidden;
+      background: var(--light);
+    }
+    .timeline-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: grayscale(15%);
+      transition: filter 0.5s, transform 0.6s;
+    }
+    .timeline-item:hover .timeline-img img {
+      filter: grayscale(0%);
+      transform: scale(1.04);
+    }
+    .timeline-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--black);
+      margin: 1.2rem auto;
+    }
+    .timeline-content { padding: 0 1.5rem 2rem; }
+    .timeline-role {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+    .timeline-company {
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+    .timeline-bullets { list-style: none; }
+    .timeline-bullets li {
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: #555;
+      padding-left: 1rem;
+      position: relative;
+      margin-bottom: 0.4rem;
+    }
+    .timeline-bullets li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--border);
+      font-size: 0.7rem;
+    }
+    .timeline-bullets li strong { color: var(--black); font-weight: 500; }
+
+    .works-footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #555;
+      line-height: 1.8;
+    }
+    .works-footer a {
+      color: var(--blue);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    /* ——— PROJECTS ——— */
+    #projects {
+      padding: 8rem 5rem;
+      background: var(--light);
+      min-height: auto;
+    }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .project-card {
+      background: var(--white);
+      padding: 0;
+      overflow: hidden;
+      transition: transform 0.4s;
+    }
+    .project-card:hover { transform: translateY(-4px); }
+    .project-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: var(--border);
+    }
+    .project-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s;
+    }
+    .project-card:hover .project-img img { transform: scale(1.06); }
+    .project-body { padding: 1.8rem; }
+    .project-year {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 0.5rem;
+    }
+    .project-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+    .project-desc {
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: #555;
+    }
+    .project-desc a {
+      color: var(--blue);
+      text-underline-offset: 3px;
+    }
+    .project-desc strong { color: var(--black); font-weight: 500; }
+
+    .projects-hobbies {
+      margin-top: 4rem;
+      padding: 2.5rem;
+      border: 1px solid var(--border);
+      background: var(--white);
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.8;
+      font-style: italic;
+    }
+
+    /* ——— FEEDBACKS ——— */
+    #feedbacks {
+      padding: 8rem 5rem;
+      min-height: auto;
+    }
+    .feedbacks-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-style: italic;
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+    .feedbacks-title span {
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+    .testimonials { display: flex; flex-direction: column; gap: 0; }
+    .testimonial {
+      padding: 3rem 4rem;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 3fr;
+      gap: 3rem;
+      transition: background 0.3s;
+    }
+    .testimonial:last-child { border-bottom: 1px solid var(--border); }
+    .testimonial:hover { background: var(--light); }
+    .testimonial-source {
+      font-size: 0.78rem;
+      color: var(--gray);
+      line-height: 1.5;
+      padding-top: 0.3rem;
+    }
+    .testimonial-source strong { display: block; color: var(--black); font-weight: 500; margin-bottom: 0.2rem; }
+    .testimonial-quote {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #333;
+      quotes: '\201C''\201D''\2018''\2019';
+    }
+    .testimonial-quote::before { content: open-quote; font-size: 1.4em; line-height: 0; vertical-align: -0.4em; color: var(--border); margin-right: 0.1em; }
+    .testimonial-quote strong { color: var(--black); font-weight: 600; }
+
+    /* ——— CONTACTS ——— */
+    #contacts {
+      padding: 8rem 5rem;
+      background: var(--black);
+      color: var(--white);
+      min-height: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    .contact-left {}
+    .contact-big {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 6vw, 6rem);
+      line-height: 1.05;
+      font-weight: 700;
+      margin-bottom: 3rem;
+    }
+    .contact-big em { font-style: italic; color: var(--green); }
+    .contact-links { display: flex; flex-direction: column; gap: 1.2rem; }
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+      color: rgba(250,250,248,0.6);
+      font-size: 0.9rem;
+      transition: color 0.3s, gap 0.3s;
+    }
+    .contact-link:hover { color: var(--white); gap: 1.4rem; }
+    .contact-link .icon {
+      width: 20px; height: 20px;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+      flex-shrink: 0;
+    }
+    .contact-link:hover .icon { opacity: 1; }
+
+    .contact-right {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+    }
+    .contact-photo {
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: #222;
+    }
+    .contact-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.7;
+      transition: opacity 0.4s, transform 0.5s;
+    }
+    .contact-photo:hover img { opacity: 1; transform: scale(1.04); }
+    .contact-photo:nth-child(1) { grid-row: span 2; }
+
+    footer {
+      background: var(--black);
+      border-top: 1px solid #222;
+      padding: 1.5rem 5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer span {
+      font-size: 0.75rem;
+      color: #444;
+      letter-spacing: 0.05em;
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Mobile */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+      #about { grid-template-columns: 1fr; }
+      .hero-left { padding: 7rem 1.5rem 3rem; }
+      .hero-right { min-height: 60vw; }
+      #works, #projects, #feedbacks { padding: 5rem 1.5rem; }
+      .timeline { grid-template-columns: 1fr; }
+      .timeline::before { display: none; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .testimonial { grid-template-columns: 1fr; gap: 1rem; padding: 2rem 1.5rem; }
+      #contacts { grid-template-columns: 1fr; padding: 5rem 1.5rem; gap: 3rem; }
+      .contact-right { grid-template-columns: 1fr 1fr; }
+      footer { padding: 1.2rem 1.5rem; flex-direction: column; gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Nav -->
+  <nav id="nav">
+    <a class="nav-logo" href="#about">Kanzia</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#works">Works</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#feedbacks">Feedbacks</a></li>
+      <li><a href="#contacts">Contacts</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO / ABOUT -->
+  <section id="about">
+    <div class="hero-left">
+      <p class="hero-greeting">Hi! I'm</p>
+      <h1 class="hero-headline">
+        <em>Kanzia</em><br>
+        I help <span class="green">leaders</span> manage<br>
+        <span class="blue">digital transformation</span><br>
+        with various strategies
+      </h1>
+      <div class="hero-exp">
+        <div class="hero-exp-item">
+          <span class="dot"></span>
+          <span><strong>Campaign GTM Coordinator</strong> — Astro Indonesia 🚀 &nbsp;2023–Current</span>
+        </div>
+        <div class="hero-exp-item">
+          <span class="dot"></span>
+          <span><strong>Brand Marketing Intern</strong> — UniPin Indonesia 🎮 &nbsp;2023</span>
+        </div>
+        <div class="hero-exp-item">
+          <span class="dot"></span>
+          <span><strong>Podcast Producer Intern</strong> — Medio by Kompas Gramedia 🎙 &nbsp;2021–2022</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-collage">
+        <!-- Placeholder colored blocks representing the collage; replace src with actual image paths -->
+        <div class="collage-item" style="background:#ddd"></div>
+        <div class="collage-item" style="background:#c5d4c5"></div>
+        <div class="collage-item" style="background:#d4c5c5"></div>
+        <div class="collage-item" style="background:#c5c5d4"></div>
+        <div class="collage-item" style="background:#d4d0c5"></div>
+        <div class="collage-item" style="background:#c5d4d0"></div>
+      </div>
+      <p class="hero-overlay-text">Portfolio 2021–Present</p>
+    </div>
+  </section>
+
+  <!-- WORKS -->
+  <section id="works">
+    <div class="section-header reveal">
+      <h2 class="section-title">Works</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="timeline reveal">
+      <!-- Medio -->
+      <div class="timeline-item">
+        <p class="timeline-year">2021–2022</p>
+        <div class="timeline-img">
+          <!-- Replace with actual photo: <img src="images/medio.jpg" alt="Medio"> -->
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#e8e4dc,#ccc8bf)"></div>
+        </div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <p class="timeline-role">Podcast Producer Intern 🎙</p>
+          <p class="timeline-company">Medio by Kompas Gramedia</p>
+          <ul class="timeline-bullets">
+            <li>Managed <strong>end-to-end production</strong> for 60+ podcast episodes</li>
+            <li>Practiced <strong>public speaking</strong> through hosting episodes, events and VOs</li>
+            <li>Increased listenership by <strong>50%</strong> through campaigns and marketing strategies</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- UniPin -->
+      <div class="timeline-item">
+        <p class="timeline-year">2023</p>
+        <div class="timeline-img">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#dce0e8,#bfc3cc)"></div>
+        </div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <p class="timeline-role">Brand Marketing Intern 🎮</p>
+          <p class="timeline-company">UniPin Indonesia</p>
+          <ul class="timeline-bullets">
+            <li>On-ground officer for <strong>various offline activations</strong></li>
+            <li>Coordinator for <strong>new users marketing</strong> through collaboration with KOLs</li>
+            <li>Conducted <strong>monthly market research</strong> and competitive analysis</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Astro -->
+      <div class="timeline-item">
+        <p class="timeline-year">2023–Current</p>
+        <div class="timeline-img">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#dce8dc,#bfccbf)"></div>
+        </div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <p class="timeline-role">Campaign GTM Coordinator 🚀</p>
+          <p class="timeline-company">Astro Indonesia</p>
+          <ul class="timeline-bullets">
+            <li>Manage daily campaign exposure for <strong>40+ FMCG brands</strong> and partners</li>
+            <li>Develop <strong>campaign and features user journey</strong> and present data-driven evaluations</li>
+            <li>Lead <strong>campaign research initiatives</strong> for better exposure engagement</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <p class="works-footer reveal">
+      I also <a href="https://open.spotify.com/show/imagitive" target="_blank">host my own Podcast</a>,
+      <a href="https://xrindonesia.carrd.co/" target="_blank">made a game to educate climate change using RenPy</a>,<br>
+      and <a href="#">share my thoughts</a> sometimes.
+    </p>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-header reveal">
+      <h2 class="section-title">Projects</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="projects-grid">
+      <!-- Project Manager -->
+      <div class="project-card reveal">
+        <div class="project-img">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#3a3a3a);display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;color:#e8d44d;font-weight:900;font-size:1.3rem;padding:1rem;font-family:'Playfair Display',serif;line-height:1.2">OUR TRUE<br>FUTURE</div>
+          </div>
+        </div>
+        <div class="project-body">
+          <p class="project-year">2021</p>
+          <h3 class="project-name">Project Manager</h3>
+          <p class="project-desc">
+            Initiated a climate change education series for Indonesian youth. Role included <strong>overseeing timelines, moderating classes, and briefing facilitators</strong>. Over 150+ people joined weekly Zoom sessions for six weeks.
+          </p>
+        </div>
+      </div>
+
+      <!-- Climate Game -->
+      <div class="project-card reveal" style="transition-delay:0.1s">
+        <div class="project-img">
+          <div style="width:100%;height:100%;background:#1e3a1e;display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;color:#6ac96a;font-weight:900;font-size:1rem;padding:1rem;font-family:monospace;line-height:1.4">LETS HAVE FUN<br>WHILE SAVING<br>THE WORLD</div>
+          </div>
+        </div>
+        <div class="project-body">
+          <p class="project-year">2021</p>
+          <h3 class="project-name">Climate Change Visual Novel</h3>
+          <p class="project-desc">
+            <strong>Python-based educational game on climate change.</strong> Gained 500+ downloads in the first six months. Still available at <a href="https://xrindonesia.carrd.co/" target="_blank">xrindonesia.carrd.co</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Podcast -->
+      <div class="project-card reveal" style="transition-delay:0.2s">
+        <div class="project-img">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#f5f0e8,#e0d8cc);display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;font-family:'Playfair Display',serif;font-size:1.3rem;font-style:italic;color:#333">Imagitive<br><span style="font-size:0.7rem;letter-spacing:0.2em;font-style:normal;text-transform:uppercase;color:#888">Podcast</span></div>
+          </div>
+        </div>
+        <div class="project-body">
+          <p class="project-year">2020 – Current</p>
+          <h3 class="project-name">Imagitive Podcast</h3>
+          <p class="project-desc">
+            Following curiosity while honing public speaking and networking skills. <strong>60+ episodes</strong> with various topics and experienced, knowledgeable guests. Available on <a href="https://open.spotify.com/show/imagitive" target="_blank">Spotify</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="projects-hobbies reveal">
+      On my free time; I read books, hit the gym, and explore skills such as learning Figma, Jira/Trello,<br>or simply hear podcasts on current affairs.
+    </div>
+  </section>
+
+  <!-- FEEDBACKS -->
+  <section id="feedbacks">
+    <h2 class="feedbacks-title reveal">on <span>working</span> with Kanzia…</h2>
+
+    <div class="testimonials">
+      <div class="testimonial reveal">
+        <div class="testimonial-source">
+          <strong>Marketing & Communication Strategist</strong>
+          Kompas Gramedia
+        </div>
+        <p class="testimonial-quote">
+          Kanzia was my co-producer at Medio. I must say, he is creative and full of ideas. <strong>His management skills and adeptness at networking are truly commendable. He is confident about his work, which makes him a standout professional.</strong> He was up to any challenge given. He's an asset to any organization fortunate enough to have him on board.
+        </p>
+      </div>
+
+      <div class="testimonial reveal">
+        <div class="testimonial-source">
+          <strong>Category Manager</strong>
+          Astro Indonesia
+        </div>
+        <p class="testimonial-quote">
+          Kanzia has been extremely helpful in managing campaigns. Whenever we faced tight timelines or complex setups, Kanzia consistently ensured every campaign went up smoothly <strong>by coordinating the details and anticipating what needed to be prepared.</strong> He was also <strong>very responsive to any roadblocks during each campaign period</strong>, quickly addressing issues so execution stayed on track. Thanks to his support, our campaign ran efficiently and without major disruptions.
+        </p>
+      </div>
+
+      <div class="testimonial reveal">
+        <div class="testimonial-source">
+          <strong>Campaign GTM Coordinator</strong>
+          Astro Indonesia
+        </div>
+        <p class="testimonial-quote">
+          Kanzi <strong>demonstrates a strong ability to manage multiple projects simultaneously while maintaining clear coordination and reliable follow-through.</strong> He remains patient and supportive when clarifying the same questions, ensuring the entire team stays aligned. <strong>He also takes initiative in exploring new ideas that contribute to the company's progress as well as his own professional growth.</strong> His proactive and collaborative approach is highly appreciated.
+        </p>
+      </div>
+
+      <div class="testimonial reveal">
+        <div class="testimonial-source">
+          <strong>Copywriter</strong>
+          Astro Indonesia
+        </div>
+        <p class="testimonial-quote">
+          Kanzia has a humorous and pleasant personality, which makes meetings with him always enjoyable and relaxed. Being an avid reader, <strong>he has excellent language skills and can simplify complex matters with ease.</strong> He is also very fast in responding. Understanding his briefs is easier thanks to his <strong>strong presentation skills and his ability to provide clear guidance.</strong>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section id="contacts">
+    <div class="contact-left">
+      <h2 class="contact-big">Let's<br><em>connect!</em></h2>
+      <div class="contact-links">
+        <a class="contact-link" href="mailto:kanziarah@gmail.com">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+          kanziarah@gmail.com
+        </a>
+        <a class="contact-link" href="https://linkedin.com/in/muhammadkanzia" target="_blank">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+          Muhammad Kanzia
+        </a>
+        <a class="contact-link" href="https://instagram.com/kanz.kanz" target="_blank">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          kanz.kanz
+        </a>
+      </div>
+    </div>
+
+    <div class="contact-right">
+      <!-- Placeholder photos — replace src="" with paths to real images -->
+      <div class="contact-photo" style="grid-row:span 2">
+        <div style="width:100%;height:100%;background:#1c2c1c"></div>
+      </div>
+      <div class="contact-photo">
+        <div style="width:100%;height:100%;background:#2c1c1c"></div>
+      </div>
+      <div class="contact-photo">
+        <div style="width:100%;height:100%;background:#1c1c2c"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2025 Muhammad Kanzia</span>
+    <span>Built with purpose — open to opportunities</span>
+  </footer>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animateCursor() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      cursor.style.left = mx + 'px';
+      cursor.style.top  = my + 'px';
+      ring.style.left   = rx + 'px';
+      ring.style.top    = ry + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => { ring.style.width = '56px'; ring.style.height = '56px'; ring.style.opacity = '0.2'; });
+      el.addEventListener('mouseleave', () => { ring.style.width = '36px'; ring.style.height = '36px'; ring.style.opacity = '0.4'; });
+    });
+
+    // Nav scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
